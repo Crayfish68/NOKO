@@ -1,11 +1,11 @@
- /* NOKO V2.0 19.03.2018 - Nikolai Radke
+ /* NOKO V2.0 30.04.2018 - Nikolai Radke
  *
  * Sketch for NOKO-Monster - Deutsch
  * NOTE: Does NOT run without the Si4703 Radio Module! Uncommend line 88 if it's not present.
  * The main loop controls the timing events and gets interrupted by the read_button()-funtion.
  * Otherwise NOKO falls asleep with powerdown_delay() for 120ms. This saves a lot of power.
  * 
- * Flash-Usage: 28.508 (1.8.2 | AVR Core 1.6.18 | Linux x86_64, Windows 10 | Compiler options)
+ * Flash-Usage: 28.500 (1.8.2 | AVR Core 1.6.18 | Linux x86_64, Windows 10 | Compiler options)
  * 
  * Optional:
  * Compiler Options:   -funsafe-math-optimizations -mcall-prologues -maccumulate-args
@@ -80,7 +80,7 @@
 */
 
 // Softwareversion
-#define Firmware "-190318"
+#define Firmware "-300418"
 #define Version 20  // 2.0 - PCB
 #define Build_by "by Nikolai Radke" // Your Name. Max. 20 chars, appears in "Mein NOKO" menu
 
@@ -149,7 +149,7 @@
 #define turnOff_amp     PORTD |= (1<<6)   // Amplifier HIGH=off
 #define turnOn_aux      PORTD |= (1<<7)   // AUX HIGH=on
 #define turnOff_aux     PORTD &= ~(1<<7)  // AUX LOW=off
-#define mp3_busy        (analogRead(1)>1) // Busy=HIGH?
+#define mp3_busy        PIND & (1<<4)     // Digital reading on D4
 // #define mp3_busy     PIND & (1<<4)     // Digital reading on D4
 
 // Libraries
@@ -311,8 +311,6 @@ init();
     radio_station[help]=(read_EEPROM(21+(help*2))*10)+(read_EEPROM(22+(help*2)));
   distance_light=read_EEPROM(27);
   night_lcd_dimm=read_EEPROM(28);
-  //max_stories=(read_EEPROM(17)*29)+(read_EEPROM(30));
-  max_stories=99;
   alarm_days=read_EEPROM(29);
 
   //  Read AT24C32 
@@ -464,7 +462,6 @@ while(1)
       { 
         distance_off=!distance_off;
         draw_time();
-        event();
       }
       break;
     case 3:                                   // Left: toggle display & power save
@@ -729,7 +726,7 @@ void powerup()  // Power save off
 uint8_t newrandom(uint8_t a,uint8_t b) // Better XOR random number generator 
 {
     uint16_t rnd;
-    rnd+=micros();
+    rnd+=analogRead(6)+micros();
     rnd^=rnd<<2;rnd^=rnd>>7;rnd^=rnd<<7;
     return (rnd/65535.0)*(b-a)+a;
 }
@@ -2068,9 +2065,9 @@ void menue_Settings2() // "weiter...":  More settings
   lcd.setCursor(2,1);
   lcd.print(F("Distanzlicht   [ ]")); // Use ultrasonic to turn on light when it's off
   lcd.setCursor(2,2);
-  lcd.print(F("Equalizer..."));       // Equalizer menue
+  lcd.print(F("Equalizer & Upload")); // Equalizer menue
   lcd.setCursor(2,3);
-  lcd.print(F("Mein NOKO"));          // About NOKO menue
+  lcd.print(F("Mein NOKO")); // About NOKO menue
   while (selected!=4)
   {
     put_char(18,0,powersave? 88:32);
@@ -2115,7 +2112,7 @@ void menue_Equalizer() // Set equalizer mode of MP3 module
    uint8_t menue=0;
    print_icon(custom_char[15]);
    lcd.blink();
-   lcd.print(F("Equalizer"));
+   lcd.print(F("Equalizer & Upload"));
    lcd.setCursor(0,1);
    lcd.print(F("Normal  [ ] Pop  [ ]"));
    lcd.setCursor(0,2);
@@ -2125,8 +2122,8 @@ void menue_Equalizer() // Set equalizer mode of MP3 module
    while (selected!=4)
    {
      put_char(equalizer%2==0? 9:18,(equalizer/2)+1,88);
-     lcd.setCursor(menue%2==0? 9:18,(menue/2)+1);
-     wait_1m(false,false);   
+     lcd.setCursor(menue%2==0? 9:18,(menue/2)+1);  
+     selected=read_button(false);
      switch(selected)
      {
         case 1:
@@ -2138,6 +2135,7 @@ void menue_Equalizer() // Set equalizer mode of MP3 module
         case 2: if (menue<5) menue++; break;
         case 3: if (menue>0) menue--; break;
      }
+     powerdown_delay(pwd_delay);
    }
 }
 
@@ -2523,5 +2521,6 @@ void write_EEPROM(uint8_t address, uint8_t data) // Write internal EEPROM with o
 {
   EEPROM.update(address+offset,data);
 }
+
 
 

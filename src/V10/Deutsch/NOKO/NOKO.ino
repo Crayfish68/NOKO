@@ -1,11 +1,11 @@
- /* NOKO V1.0 07.03.2018 - Nikolai Radke
+ /* NOKO V1.0 30.04.2018 - Nikolai Radke
  *
  * Sketch for NOKO-Monster - Deutsch
  * NOTE: Does NOT run without the Si4703 Radio Module! Uncommend line 88 if it's not present.
  * The main loop controls the timing events and gets interrupted by the read_button()-funtion.
  * Otherwise NOKO falls asleep with powerdown_delay() for 120ms. This saves a lot of power.
  * 
- * Flash-Usage: 27.814 (1.8.2 | AVR Core 1.6.18 | Linux x86_64, Windows 10 | Compiler options)
+ * Flash-Usage: 27.832 (1.8.2 | AVR Core 1.6.19 | Linux x86_64, Windows 10 | Compiler options)
  * 
  * Optional:
  * Compiler Options:   -funsafe-math-optimizations -mcall-prologues -maccumulate-args
@@ -80,7 +80,7 @@
 */
 
 // Softwareversion
-#define Firmware "-070318"
+#define Firmware "-300418"
 #define Version 10  // 1.0
 #define Build_by "by Nikolai Radke" // Your Name. Max. 20 chars, appears in "Mein NOKO" menu
 
@@ -109,7 +109,7 @@
 #define vol_mp3       30  // JQ6500 volume 0-30
 #define vol_radio     10  // Si4703 volume 0-15
 #define def_sysinfo       // Sysinfo menu. Comment out for additional 640 bytes
-//#define busy_analog     // Set if reading the busy signal analog via A1
+#define busy_analog     // Set if reading the busy signal analog via A1
 
 // Choose your voice set              
 //#define voice_set_111   // Old set with 111 files
@@ -287,7 +287,7 @@ init();
   power_timer2_disable();
   
   // Portdefinitions. Direct manipulation is much faster and saves flash
-  DDRD=B11101000;   // D7-D0 | 1=OUTPUT
+  DDRD=B11111000;   // D7-D0 | 1=OUTPUT
   DDRB=B00101100;   // D13-D8
   DDRC=B00001100;   // A7-A0 | Set unused analog pins to output to prevent catching noise from open ports
   PORTD=B01000000;  // D6 MOSFET HIGH: Turn off amplifier to prevent startup noise
@@ -385,14 +385,14 @@ init();
   sound_on();
   play_tone(600,80,false,80);
   play_tone(880,150,false,150);
-  turnOff_amp;
+  //turnOff_amp;
   
   read_time(); // Read RTC
   night_over=check_night(); // Has nightmode switched before startup?
-
+  
   max_files=mp3.countFiles(MP3_SRC_SDCARD)-(voice_birthday+max_stories); // Number own of files on SD card
+  
 }
-
 // MAIN LOOP
 while(1)
 {
@@ -532,8 +532,8 @@ uint8_t read_button(boolean silent)  // Read pressed button und debounce | silen
     {
       if (analogRead(Buttons)>0)
       {
-        if ((!mp3_busy) && (!silent) && (!mp3_pause))
-          if (newrandom(1,8)==4) JQ6500_play(newrandom(11,voice_nose_start)); 
+        if ((!silent) && (!mp3_pause))
+          JQ6500_play(newrandom(11,voice_nose_start)); 
         powerdown_delay(pwd_delay);
         return 1;
       }
@@ -724,7 +724,7 @@ void powerup()  // Power save off
 uint8_t newrandom(uint8_t a,uint8_t b) // Better XOR random number generator 
 {
     uint16_t rnd;
-    rnd+=micros();
+    rnd+=analogRead(6)+micros();
     rnd^=rnd<<2;rnd^=rnd>>7;rnd^=rnd<<7;
     return (rnd/65535.0)*(b-a)+a;
 }
@@ -2023,7 +2023,7 @@ void menue_Settings2() // "weiter...":  More settings
   lcd.setCursor(2,1);
   lcd.print(F("Distanzlicht   [ ]")); // Use ultrasonic to turn on light when it's off
   lcd.setCursor(2,2);
-  lcd.print(F("Equalizer..."));       // Equalizer menue
+  lcd.print(F("Equalizer & Upload")); // Equalizer menue and upload mode
   lcd.setCursor(2,3);
   lcd.print(F("Mein NOKO"));          // About NOKO menue
   while (selected!=4)
@@ -2070,7 +2070,7 @@ void menue_Equalizer() // Set equalizer mode of MP3 module
    uint8_t menue=0;
    print_icon(custom_char[15]);
    lcd.blink();
-   lcd.print(F("Equalizer"));
+   lcd.print(F("Equalizer & Upload"));
    lcd.setCursor(0,1);
    lcd.print(F("Normal  [ ] Pop  [ ]"));
    lcd.setCursor(0,2);
@@ -2080,8 +2080,8 @@ void menue_Equalizer() // Set equalizer mode of MP3 module
    while (selected!=4)
    {
      put_char(equalizer%2==0? 9:18,(equalizer/2)+1,88);
-     lcd.setCursor(menue%2==0? 9:18,(menue/2)+1);
-     wait_1m(false,false);   
+     lcd.setCursor(menue%2==0? 9:18,(menue/2)+1);  
+     selected=read_button(false);
      switch(selected)
      {
         case 1:
@@ -2093,6 +2093,7 @@ void menue_Equalizer() // Set equalizer mode of MP3 module
         case 2: if (menue<5) menue++; break;
         case 3: if (menue>0) menue--; break;
      }
+     powerdown_delay(pwd_delay);
    }
 }
 
@@ -2441,7 +2442,6 @@ void JQ6500_play(uint16_t file) // Plays MP3 number v
 {
   sound_on(); // Amplifier on
   mp3.playFileByIndexNumber(file);
-  powerdown_delay(100);
   if (file_on) mp3.setLoopMode(MP3_LOOP_FOLDER);
   if (story_on) mp3.setLoopMode(MP3_LOOP_NONE);  
 }

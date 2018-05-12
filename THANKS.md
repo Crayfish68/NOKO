@@ -5,6 +5,7 @@ These people helped me bringing life to NOKO:
 - **Hans Radke** - (my dad) hardware construction and a lot of soldering.
 - **Nora Linder** - creating and sewing the monster suit and spellchecking.
 - **Carsten Caniglia** - the voice of NOKO. Look at his [Homepage](https://filmmakers.de/carsten-caniglia).  
+- **Norma Anthes** - the new female voice of NOKO. Look at her [Homepage](http://norma-anthes.de/Norma_Anthes/).  
 - **Ian Berell** - some english translations and spelling. Look at his [bike locks](https://twitter.com/sphykeian) and his new Hexlox [Kickstarter campain](https://www.kickstarter.com/projects/hexlox/hexlox-anti-theft-for-saddles-wheels-and-more-made). 
 - **Helga Hansen** - The great article in the german Make-Magazin.
 
@@ -14,12 +15,13 @@ Active supporters:
 - **David Feindel** - corrections.  
 - **Reinhard Hund** - corrections.  
 - **Ronny Roscher** - he found an annoying hardware bug.  
-- **Thomas "Crayfish68"** - schemtics corrections and the (wheeee!) pcb.  
+- **Thomas "Crayfish68"** - schemtics corrections, the (wheeee!) pcb and a LOT of beta testing.   
 - **Yannik "ylth94"** - for the first pcb and supporting Thomas with the pcb design.  
 - **Tim "Wetimer"** - for supporting Thomas with the pcb design.  
 - **"jlegen"** - for supporting Thomas with the pcb design.  
 - **Thomas "teuler"** - for supporting Thomas with the pcb design.  
 - **Ralf Warmuth** - corrections.  
+- **BigAngelina** - ideas,testing and the (horray!) 3D casing.  
 - **Issue-Community** - ideas, inspirations and (alas!) bugs.  
 
 Used ressources:  

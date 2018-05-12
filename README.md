@@ -2,7 +2,7 @@
 
 The DIY-**NOKO Monster**, lovely and naughty, ready to build on your own. And everyone is invited to **contribute**. NOKO is for everyone. What's new? See the [newsblog](https://github.com/NikolaiRadke/NOKO/tree/master/NEWS.md).  
 
-**01.03.2018** - NOKO will get a new 3D-printed casing for easy assembly. No more drilling, sewing, grinding and cursing.  
+**11.05.2018** - The female voice set is ready! Note if you are planing to chance your set, you need to reinstall **all** of your MP3-files to your card again. Stupid module...  
   
 ![NOKO Orange](http://www.nikolairadke.de/NOKO/noko_echt.png)  
 
@@ -46,13 +46,19 @@ NOKO/
 |       Source documents for Scribus with all illustrations and fonts.
 |
 ├── mp3/
-|   Voice sets for NOKO in German. English needed? Contribute!
-|   ├── alternative/
-|   |   Some less rude voice files.
-|   ├── VoiceSet_111/
-|   |   Voice set for older NOKOs.
-|   └── VoiceSet_226/
-|       Enhanced voice set.
+|   Female and male voice sets for NOKO in German. English needed? Contribute!
+|   ├── Female/  
+|   |   Female voice set for NOKOs.
+|   |   └── VoiceSet_226/
+|   |       New voice files.
+|   └── Male/
+|       Male voice sets
+|       ├── alternative/
+|       |   Some less rude voice files.
+|       ├── VoiceSet_111/
+|       |   Voice set for older NOKOs.
+|       └── VoiceSet_226/
+|           Enhanced voice set.
 | 
 ├── schematics/
 |   The Schematics for the NOKO parts, the NOKO sewing pattern and shopping lists.
